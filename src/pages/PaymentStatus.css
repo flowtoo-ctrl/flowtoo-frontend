@@ -1,0 +1,21 @@
+.payment-status {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.payment-status h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.payment-status p {
+  margin-bottom: 2rem;
+}
+
+.payment-status a {
+  background: #000;
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 5px;
+  text-decoration: none;
+}

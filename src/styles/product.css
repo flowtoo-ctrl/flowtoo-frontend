@@ -1,0 +1,36 @@
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.product-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.product-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.product-card h3 {
+  margin: 0.5rem 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #ff9800;
+  color: #fff;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+.btn:hover {
+  background: #e68900;
+}

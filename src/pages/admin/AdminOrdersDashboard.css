@@ -1,0 +1,78 @@
+.admin-orders-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.orders-table th {
+  background-color: #0071e3;
+  color: white;
+  font-weight: 600;
+}
+
+.orders-table tr:hover {
+  background: #f7f7f7;
+}
+
+.deliver-btn {
+  background: #00b894;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.deliver-btn:hover {
+  background: #019875;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .orders-table {
+    font-size: 12px;
+  }
+  .deliver-btn,
+  .delete-btn {
+    padding: 6px 10px;
+  }
+}
