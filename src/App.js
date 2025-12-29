@@ -19,7 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
-import Services from "/components/Services";
+import Services from "./components/Services";
 import "./App.css";
 
 function App() {
