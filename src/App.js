@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import Services from "/components/Services";
 import "./App.css";
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/cancel" element={<CancelPage />} />
+            <Route path="/Services" element={<Services />} />
             
             {/* Protected Routes */}
             <Route
