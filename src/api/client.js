@@ -1,40 +1,41 @@
 import axios from 'axios';
 
-// Safe way to get the API base URL
+// Get base URL safely
 const getBaseURL = () => {
-  // First, try the Vite environment variable (set in Vercel)
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const url = import.meta.env.VITE_API_BASE_URL;
+
+  if (url) {
+    return url.endsWith('/') ? url.slice(0, -1) : url;
   }
 
-  // Fallback for local development
+  // Local development
   if (import.meta.env.DEV) {
     return 'http://localhost:5000';
   }
 
-  // Final fallback for production if variable is missing (prevents crash)
-  console.error('VITE_API_BASE_URL is not defined. Using root "/" as fallback.');
-  return '/'; // This prevents the app from crashing — API calls will fail gracefully
+  // Production fallback — don't crash
+  console.warn('VITE_API_BASE_URL not set. API calls will fail.');
+  return '';
 };
 
 const apiClient = axios.create({
   baseURL: getBaseURL(),
-  timeout: 10000, // 10 seconds timeout
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Optional: Add request interceptor to include auth token
+// Add auth token if exists
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+}, (error) => Promise.reject(error));
 
-// Optional: Add response interceptor for error handling
+// Handle 401 (unauthorized)
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
