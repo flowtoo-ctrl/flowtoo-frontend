@@ -1,51 +1,41 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Get base URL safely
 const getBaseURL = () => {
-  const url = import.meta.env.VITE_API_BASE_URL;
+  // Read env safely
+  const envUrl = import.meta.env?.VITE_API_BASE_URL;
 
-  if (url) {
-    return url.endsWith('/') ? url.slice(0, -1) : url;
+  // If missing, DO NOT crash app
+  if (!envUrl) {
+    console.warn("VITE_API_BASE_URL missing, using fallback");
+    return "https://flowtoo-backend.onrender.com";
   }
 
-  // Local development
-  if (import.meta.env.DEV) {
-    return 'http://localhost:5000';
+  // Ensure protocol
+  if (!envUrl.startsWith("http")) {
+    return `https://${envUrl}`;
   }
 
-  // Production fallback — don't crash
-  console.warn('VITE_API_BASE_URL not set. API calls will fail.');
-  return '';
+  return envUrl.replace(/\/$/, "");
 };
 
 const apiClient = axios.create({
   baseURL: getBaseURL(),
   timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Add auth token if exists
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => Promise.reject(error));
-
-// Handle 401 (unauthorized)
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+// 🔐 Token interceptor (safe)
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(error);
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;
