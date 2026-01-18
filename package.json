@@ -5,18 +5,18 @@
   "description": "Flowtoo E-commerce Platform - Frontend",
   "proxy": "http://localhost:5000",
   "dependencies": {
+    "@stripe/react-stripe-js": "^2.1.6",
+    "@stripe/stripe-js": "^4.1.0",
+    "axios": "^1.5.0",
+    "framer-motion": "^10.16.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
-    "axios": "^1.5.0",
     "react-icons": "^4.11.0",
-    "framer-motion": "^10.16.4",
-    "@stripe/react-stripe-js": "^2.1.6",
-    "@stripe/stripe-js": "^4.1.0"
+    "react-router-dom": "^6.15.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^4.4.5"
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.1"
   },
   "scripts": {
     "dev": "vite",
@@ -24,7 +24,9 @@
     "preview": "vite preview"
   },
   "eslintConfig": {
-    "extends": ["react-app"],
+    "extends": [
+      "react-app"
+    ],
     "rules": {
       "no-unused-vars": "off"
     }
@@ -42,4 +44,3 @@
     ]
   }
 }
-
