@@ -2,8 +2,9 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',  // fallback for local dev
-  // timeout: 10000,           // optional: add if needed
+  baseURL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/api` 
+    : 'http://localhost:5000/api',  // local fallback with /api
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,19 +13,21 @@ const API = axios.create({
 // Add token automatically to every request (if exists)
 API.interceptors.request.use(
   (config) => {
-    let profile = localStorage.getItem('profile');  // or 'flowtoo:user' — match what you use in AuthContext
+    // Use the key that matches what you store in AuthContext
+    // In your AuthContext you use "flowtoo:user", so update here:
+    let userData = localStorage.getItem('flowtoo:user');
 
-    if (profile) {
+    if (userData) {
       try {
-        const parsed = JSON.parse(profile);
-        const token = parsed.token || parsed.user?.token;  // adjust based on your stored shape
+        const parsed = JSON.parse(userData);
+        const token = parsed.token || parsed.user?.token;  // adjust if token is nested differently
 
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
       } catch (e) {
-        console.warn('Failed to parse profile from localStorage:', e);
-        // Optionally: localStorage.removeItem('profile');
+        console.warn('Failed to parse user data from localStorage:', e);
+        // Optional: localStorage.removeItem('flowtoo:user');
       }
     }
 
@@ -33,14 +36,14 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Optional: response interceptor (good for handling 401/403 globally)
+// Handle unauthorized responses globally (optional but useful)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      // Optional: logout user, redirect to login
-      console.warn('Unauthorized — token may be invalid/expired');
-      // localStorage.removeItem('profile');
+      console.warn('Unauthorized — token may be invalid or expired');
+      // Optional: clear storage and redirect to login
+      // localStorage.removeItem('flowtoo:user');
       // window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -48,4 +51,3 @@ API.interceptors.response.use(
 );
 
 export default API;
-
