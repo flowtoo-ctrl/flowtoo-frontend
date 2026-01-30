@@ -1,7 +1,7 @@
 // src/components/Services.jsx  (or Products.jsx, Components.jsx – whatever your file is)
 
 import { useState, useEffect } from 'react';
-import apiClient from '../api/client';  // adjust path if needed
+import apiClient from '../services/api';  // adjust path if needed
 
 const Services = () => {
   const [services, setServices] = useState([]);
