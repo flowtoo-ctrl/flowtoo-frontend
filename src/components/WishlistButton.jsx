@@ -6,6 +6,9 @@ export default function WishlistButton({ product, size = "medium" }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // 🚨 SAFETY: if product is missing, don't render button
+  if (!product || !product._id) return null;
+
   // Load wishlist from localStorage on mount
   useEffect(() => {
     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -15,7 +18,7 @@ export default function WishlistButton({ product, size = "medium" }) {
   const handleWishlistToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     setLoading(true);
 
     try {
@@ -28,7 +31,7 @@ export default function WishlistButton({ product, size = "medium" }) {
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
         setIsWishlisted(false);
 
-        // Sync with backend if user is logged in
+        // Sync with backend if logged in
         if (token) {
           await fetch(`/api/wishlist/${product._id}`, {
             method: "DELETE",
@@ -43,7 +46,7 @@ export default function WishlistButton({ product, size = "medium" }) {
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
         setIsWishlisted(true);
 
-        // Sync with backend if user is logged in
+        // Sync with backend if logged in
         if (token) {
           await fetch("/api/wishlist", {
             method: "POST",
@@ -79,3 +82,4 @@ export default function WishlistButton({ product, size = "medium" }) {
     </button>
   );
 }
+
