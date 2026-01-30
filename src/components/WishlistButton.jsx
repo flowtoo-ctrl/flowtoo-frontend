@@ -82,4 +82,3 @@ export default function WishlistButton({ product, size = "medium" }) {
     </button>
   );
 }
-
