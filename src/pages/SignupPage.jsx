@@ -1,8 +1,7 @@
-// src/pages/SignupPage.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import "./SignupPage.css"; // We'll use same styles as login
+import "./SignupPage.css";
 
 const SignupPage = () => {
   const [name, setName] = useState("");
@@ -24,16 +23,23 @@ const SignupPage = () => {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
-        name,
-        email,
-        password,
-      });
+      await axios.post(
+        "https://flowtoo-backend.onrender.com/api/auth/register",
+        {
+          name,
+          email,
+          password,
+        }
+      );
 
       alert("Account created successfully! Please login.");
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.msg || "Registration failed. Try again.");
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.msg ||
+        "Registration failed. Try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -55,6 +61,7 @@ const SignupPage = () => {
             onChange={(e) => setName(e.target.value)}
             required
           />
+
           <input
             type="email"
             placeholder="Email Address"
@@ -62,6 +69,7 @@ const SignupPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="password"
             placeholder="Password"
@@ -69,6 +77,7 @@ const SignupPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
           <input
             type="password"
             placeholder="Confirm Password"
