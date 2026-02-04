@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";  // ← FIXED HERE
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./LoginPage.css";
 
@@ -14,10 +14,13 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "https://flowtoo-backend.onrender.com/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -28,7 +31,11 @@ const LoginPage = () => {
         navigate("/");
       }
     } catch (err) {
-      setError(err.response?.data?.msg || "Invalid credentials, please try again.");
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.msg ||
+        "Invalid credentials, please try again."
+      );
     }
   };
 
@@ -48,6 +55,7 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="password"
             placeholder="Password"
@@ -66,7 +74,10 @@ const LoginPage = () => {
         </div>
 
         <div className="social-login">
-          <a href="http://localhost:5000/api/auth/google" className="google-btn">
+          <a
+            href="https://flowtoo-backend.onrender.com/api/auth/google"
+            className="google-btn"
+          >
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
               alt="Google"
@@ -76,7 +87,7 @@ const LoginPage = () => {
         </div>
 
         <p className="signup-link">
-          Don't have an account? <Link to="/register">Sign up</Link>
+          Don&apos;t have an account? <Link to="/register">Sign up</Link>
         </p>
       </div>
     </div>
