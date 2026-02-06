@@ -1,59 +1,107 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
-import "../Signup.css"
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import { setItem } from "../utils/storage";
+import "./SignupPage.css";
 
-export default function RegisterPage() {
+const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
     try {
-      await api.post("/api/users/register", { name, email, password });
-      alert("Account created successfully!");
-      navigate("/login");
-    } catch (error) {
-      alert("Error creating account");
+      const res = await axios.post(
+        "https://flowtoo-backend.onrender.com/api/auth/register",
+        {
+          name,
+          email,
+          password,
+        }
+      );
+
+      // Store token & user safely
+      setItem("token", res.data.token);
+      setItem("user", res.data.user);
+
+      alert("Account created successfully! You are now logged in.");
+      navigate("/");
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.msg ||
+        "Registration failed. Try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container-box">
-      <h1 className="page-title">Create Account</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+    <div className="login-container">
+      <div className="login-box">
+        <h1>Create Your Account</h1>
+        <p>Join Flowtoo and start shopping</p>
 
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        {error && <div className="error-message">{error}</div>}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSignup}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
-        <button type="submit" className="btn-primary">Sign Up</button>
-      </form>
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-      <p style={{ textAlign: "center", marginTop: "20px" }}>
-        Already have an account? <Link to="/login" className="text-link">Login</Link>
-      </p>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Creating Account..." : "Sign Up"}
+          </button>
+        </form>
+
+        <p className="signup-link">
+          Already have an account? <Link to="/login">Login here</Link>
+        </p>
+      </div>
     </div>
   );
-}
+};
+
+export default SignupPage;

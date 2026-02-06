@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { setItem } from "../utils/storage";
 import "./SignupPage.css";
 
 const SignupPage = () => {
@@ -23,7 +24,7 @@ const SignupPage = () => {
 
     setLoading(true);
     try {
-      await axios.post(
+      const res = await axios.post(
         "https://flowtoo-backend.onrender.com/api/auth/register",
         {
           name,
@@ -32,8 +33,12 @@ const SignupPage = () => {
         }
       );
 
-      alert("Account created successfully! Please login.");
-      navigate("/login");
+      // Store token & user safely
+      setItem("token", res.data.token);
+      setItem("user", res.data.user);
+
+      alert("Account created successfully! You are now logged in.");
+      navigate("/");
     } catch (err) {
       setError(
         err.response?.data?.message ||

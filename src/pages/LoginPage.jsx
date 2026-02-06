@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { setItem } from "../utils/storage";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -22,8 +23,9 @@ const LoginPage = () => {
         }
       );
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // Use resilient storage
+      setItem("token", res.data.token);
+      setItem("user", res.data.user);
 
       if (res.data.user.isAdmin) {
         navigate("/admin");
