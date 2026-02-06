@@ -1,43 +1,39 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import { setItem } from "../utils/storage";
+import { useAuth } from "../context/AuthContext";
 import "./LoginPage.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use AuthContext login
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const res = await axios.post(
-        "https://flowtoo-backend.onrender.com/api/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const data = await login(email, password); // Call AuthContext login
 
-      // Use resilient storage
-      setItem("token", res.data.token);
-      setItem("user", res.data.user);
-
-      if (res.data.user.isAdmin) {
+      // Redirect based on admin
+      if (data.isAdmin) {
         navigate("/admin");
       } else {
         navigate("/");
       }
     } catch (err) {
+      console.error(err);
       setError(
-        err.response?.data?.message ||
         err.response?.data?.msg ||
+        err.response?.data?.message ||
         "Invalid credentials, please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,30 +62,13 @@ const LoginPage = () => {
             required
           />
 
-          <button type="submit" className="login-btn">
-            Login with Email
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login with Email"}
           </button>
         </form>
 
-        <div className="social-login-divider">
-          <span>or</span>
-        </div>
-
-        <div className="social-login">
-          <a
-            href="https://flowtoo-backend.onrender.com/api/auth/google"
-            className="google-btn"
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-            />
-            Continue with Google
-          </a>
-        </div>
-
         <p className="signup-link">
-          Don&apos;t have an account? <Link to="/register">Sign up</Link>
+          Don't have an account? <Link to="/register">Sign up</Link>
         </p>
       </div>
     </div>

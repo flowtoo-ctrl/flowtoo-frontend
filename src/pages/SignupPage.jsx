@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import { setItem } from "../utils/storage";
+import { useAuth } from "../context/AuthContext";
 import "./SignupPage.css";
 
 const SignupPage = () => {
@@ -12,6 +11,7 @@ const SignupPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signup } = useAuth(); // Use AuthContext signup
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -23,26 +23,21 @@ const SignupPage = () => {
     }
 
     setLoading(true);
+
     try {
-      const res = await axios.post(
-        "https://flowtoo-backend.onrender.com/api/auth/register",
-        {
-          name,
-          email,
-          password,
-        }
-      );
+      const data = await signup(name, email, password); // Call AuthContext signup
 
-      // Store token & user safely
-      setItem("token", res.data.token);
-      setItem("user", res.data.user);
-
-      alert("Account created successfully! You are now logged in.");
-      navigate("/");
+      alert("Account created successfully!");
+      if (data.isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/login"); // Non-admin: go to login page
+      }
     } catch (err) {
+      console.error(err);
       setError(
-        err.response?.data?.message ||
         err.response?.data?.msg ||
+        err.response?.data?.message ||
         "Registration failed. Try again."
       );
     } finally {
