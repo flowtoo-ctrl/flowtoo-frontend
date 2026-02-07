@@ -1,78 +1,54 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "./LoginPage.css";
 
-const LoginPage = () => {
+export default function LoginPage() {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuth(); // AuthContext login
 
-  const handleLogin = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
     try {
-      const data = await login(email, password); // call AuthContext login
-
-      // Redirect based on admin
-      if (data.isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      await login(email, password);
+      window.location.href = "/";
     } catch (err) {
-      console.error(err);
-      setError(
-        err.response?.data?.msg ||
-        err.response?.data?.message ||
-        "Invalid credentials, please try again."
-      );
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h1>Welcome Back</h1>
-        <p>Log in to your Flowtoo account</p>
+    <div>
+      <h2>Login</h2>
 
-        {error && <div className="error-message">{error}</div>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <form onSubmit={submitHandler}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login with Email"}
-          </button>
-        </form>
+        <button type="submit">Login</button>
+      </form>
 
-        <p className="signup-link">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </p>
-      </div>
+      <hr />
+
+      <a href={`${import.meta.env.VITE_API_URL}/api/auth/google`}>
+        <button>Login with Google</button>
+      </a>
     </div>
   );
-};
+}
 
-export default LoginPage;

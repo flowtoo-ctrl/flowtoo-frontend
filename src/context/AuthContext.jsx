@@ -1,84 +1,47 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import api from "../services/api";
+import { createContext, useContext, useEffect, useState } from "react";
+import API_AUTH from "../services/apiAuth";
 
-const AuthContext = createContext(null);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  
-  // Optional: better dev experience — throw if used outside provider
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  
-  return context;
-};
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem("flowtoo:user");
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw);
-    } catch (err) {
-      console.warn("Failed to parse stored user:", err);
-      localStorage.removeItem("flowtoo:user");
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Sync user → localStorage
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("flowtoo:user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("flowtoo:user");
+    const stored = localStorage.getItem("flowtoo:user");
+    if (stored) {
+      setUser(JSON.parse(stored));
     }
-  }, [user]);
+    setLoading(false);
+  }, []);
 
   const login = async (email, password) => {
-    try {
-      const { data } = await api.post("/api/auth/login", { email, password });
-      setUser(data);
-      return data;
-    } catch (err) {
-      console.error("Login failed:", err);
-      throw err; // let the component handle the error
-    }
+    const res = await API_AUTH.post("/login", { email, password });
+    localStorage.setItem("flowtoo:user", JSON.stringify(res.data));
+    setUser(res.data);
   };
 
   const signup = async (name, email, password) => {
-    try {
-      const { data } = await api.post("/api/auth/register", {
-        name,
-        email,
-        password,
-      });
-      setUser(data);
-      return data;
-    } catch (err) {
-      console.error("Signup failed:", err);
-      throw err;
-    }
+    const res = await API_AUTH.post("/register", {
+      name,
+      email,
+      password,
+    });
+    localStorage.setItem("flowtoo:user", JSON.stringify(res.data));
+    setUser(res.data);
   };
 
   const logout = () => {
+    localStorage.removeItem("flowtoo:user");
     setUser(null);
-    // Optional: also call backend logout if it exists
-    // api.post("/api/auth/logout").catch(() => {});
-  };
-
-  const value = {
-    user,
-    login,
-    signup,
-    logout,
-    isAuthenticated: !!user,
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+export const useAuth = () => useContext(AuthContext);
+
