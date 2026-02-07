@@ -10,25 +10,40 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const stored = localStorage.getItem("flowtoo:user");
     if (stored) {
-      setUser(JSON.parse(stored));
+      try {
+        setUser(JSON.parse(stored));
+      } catch (e) {
+        console.error("Invalid user data in localStorage", e);
+        localStorage.removeItem("flowtoo:user");
+      }
     }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
-    const res = await API_AUTH.post("/login", { email, password });
-    localStorage.setItem("flowtoo:user", JSON.stringify(res.data));
-    setUser(res.data);
+    try {
+      const res = await API_AUTH.post("/login", { email, password });
+      const data = res.data;
+      localStorage.setItem("flowtoo:user", JSON.stringify(data));
+      setUser(data);
+      return data;
+    } catch (err) {
+      console.error("Login failed:", err);
+      throw err;
+    }
   };
 
   const signup = async (name, email, password) => {
-    const res = await API_AUTH.post("/register", {
-      name,
-      email,
-      password,
-    });
-    localStorage.setItem("flowtoo:user", JSON.stringify(res.data));
-    setUser(res.data);
+    try {
+      const res = await API_AUTH.post("/register", { name, email, password });
+      const data = res.data;
+      localStorage.setItem("flowtoo:user", JSON.stringify(data));
+      setUser(data);
+      return data;
+    } catch (err) {
+      console.error("Signup failed:", err);
+      throw err;
+    }
   };
 
   const logout = () => {
