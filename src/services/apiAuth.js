@@ -3,7 +3,7 @@ import axios from "axios";
 const API_AUTH = axios.create({
   baseURL: import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api/auth`
-    : "http://localhost:5000/api/auth",
+    : "https://flowtoo-backend.onrender.com/",
   headers: {
     "Content-Type": "application/json",
   },
