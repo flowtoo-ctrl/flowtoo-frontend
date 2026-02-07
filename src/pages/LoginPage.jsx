@@ -9,7 +9,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // Use AuthContext login
+  const { login } = useAuth(); // AuthContext login
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const data = await login(email, password); // Call AuthContext login
+      const data = await login(email, password); // call AuthContext login
 
       // Redirect based on admin
       if (data.isAdmin) {

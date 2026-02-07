@@ -11,7 +11,7 @@ const SignupPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signup } = useAuth(); // Use AuthContext signup
+  const { signup } = useAuth(); // AuthContext signup
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ const SignupPage = () => {
     setLoading(true);
 
     try {
-      const data = await signup(name, email, password); // Call AuthContext signup
+      const data = await signup(name, email, password); // call AuthContext signup
 
       alert("Account created successfully!");
       if (data.isAdmin) {
