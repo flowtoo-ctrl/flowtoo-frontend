@@ -1,18 +1,23 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Use env var if available, otherwise fallback to production backend
+const apiUrl = import.meta.env.VITE_API_URL || "https://flowtoo-backend.onrender.com";
 
-const baseURL = `\( {apiUrl.replace(/\/ \)/, "")}/api/auth`; // remove trailing slash if present
+// Remove any trailing slash just in case
+const cleanUrl = apiUrl.replace(/\/$/, "");
 
-console.log("[Auth API] Using baseURL:", baseURL);
+// Build the final base URL for auth endpoints
+const baseURL = `${cleanUrl}/api/auth`;
+
+console.log("VITE_API_URL from env:", import.meta.env.VITE_API_URL);      // debug: should show your Vercel env value or undefined
+console.log("Final auth baseURL:", baseURL);                             // should show: https://flowtoo-backend.onrender.com/api/auth
 
 const API_AUTH = axios.create({
-  baseURL: baseURL,
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 15000, // optional – prevents hanging forever
+  timeout: 15000,          // 15 seconds – reasonable default
 });
 
 export default API_AUTH;
-
