@@ -1,22 +1,21 @@
-// src/services/api.js
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL 
-  : "https://flowtoo-backend.onrender.com";
+const apiUrl = import.meta.env.VITE_API_URL || "https://flowtoo-backend.onrender.com";
 
-const baseURL = `\( {apiUrl.replace(/\/ \)/, "")}/api`;  // removes trailing slash if present
+const baseURL = `\( {apiUrl.replace(/\/ \)/, "")}/api`;
 
-console.log("[General API] Using baseURL:", baseURL);
+console.log("VITE_API_URL (env value):", import.meta.env.VITE_API_URL);
+console.log("General API baseURL:", baseURL);
 
 const API = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000,
 });
 
-// Attach JWT token from localStorage if available
+// Attach token if user is logged in
 API.interceptors.request.use((config) => {
   const stored = localStorage.getItem("flowtoo:user");
   if (stored) {

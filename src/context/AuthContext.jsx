@@ -13,7 +13,6 @@ export function AuthProvider({ children }) {
       try {
         setUser(JSON.parse(stored));
       } catch (e) {
-        console.error("Invalid user data in localStorage", e);
         localStorage.removeItem("flowtoo:user");
       }
     }
@@ -28,8 +27,8 @@ export function AuthProvider({ children }) {
       setUser(data);
       return data;
     } catch (err) {
-      console.error("Login failed:", err);
-      throw err;
+      console.error("Login error:", err);
+      throw err.response?.data?.message || "Login failed";
     }
   };
 
@@ -41,8 +40,8 @@ export function AuthProvider({ children }) {
       setUser(data);
       return data;
     } catch (err) {
-      console.error("Signup failed:", err);
-      throw err;
+      console.error("Signup error:", err);
+      throw err.response?.data?.message || "Signup failed";
     }
   };
 
