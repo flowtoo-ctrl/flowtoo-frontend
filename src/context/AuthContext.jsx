@@ -4,7 +4,7 @@ import API_AUTH from "../services/apiAuth";
 
 const AuthContext = createContext();
 
-export function AuthProvider ({ children }) {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -36,9 +36,11 @@ export function AuthProvider ({ children }) {
       localStorage.setItem("flowtoo:user", JSON.stringify(data));
       setUser(data);
 
-      console.log("isAdmin value:", data.isAdmin);
+      // IMPORTANT: Check data.user.isAdmin (not data.isAdmin)
+      const isAdmin = data.user?.isAdmin === true;
+      console.log("isAdmin value:", isAdmin);
 
-      if (data.isAdmin === true) {
+      if (isAdmin) {
         console.log("ADMIN LOGIN → navigating to /admin");
         navigate("/admin", { replace: true });
       } else {
