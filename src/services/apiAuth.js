@@ -1,11 +1,8 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL || "https://flowtoo-backend.onrender.com";
+const baseURL = "https://flowtoo-backend.onrender.com/api/auth";
 
-const baseURL = `\( {apiUrl.replace(/\/ \)/, "")}/api/auth`;
-
-console.log("VITE_API_URL (env value):", import.meta.env.VITE_API_URL);
-console.log("Auth API baseURL:", baseURL);
+console.log("Auth API using hard-coded baseURL:", baseURL);
 
 const API_AUTH = axios.create({
   baseURL,

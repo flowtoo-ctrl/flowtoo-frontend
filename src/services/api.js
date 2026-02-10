@@ -1,11 +1,8 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL || "https://flowtoo-backend.onrender.com";
+const baseURL = "https://flowtoo-backend.onrender.com/api";
 
-const baseURL = `\( {apiUrl.replace(/\/ \)/, "")}/api`;
-
-console.log("VITE_API_URL (env value):", import.meta.env.VITE_API_URL);
-console.log("General API baseURL:", baseURL);
+console.log("General API using hard-coded baseURL:", baseURL);
 
 const API = axios.create({
   baseURL,
@@ -15,7 +12,7 @@ const API = axios.create({
   timeout: 15000,
 });
 
-// Attach token if user is logged in
+// Token interceptor
 API.interceptors.request.use((config) => {
   const stored = localStorage.getItem("flowtoo:user");
   if (stored) {
