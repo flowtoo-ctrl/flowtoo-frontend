@@ -4,20 +4,21 @@ import API_AUTH from "../services/apiAuth";
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export function AuthProvider ({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("flowtoo:user");
+    console.log("Checking localStorage on mount:", stored ? "found" : "not found");
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        console.log("Loaded user from localStorage on mount:", parsed);
+        console.log("Parsed stored user:", parsed);
         setUser(parsed);
       } catch (e) {
-        console.error("Failed to parse stored user:", e);
+        console.error("Invalid stored user data:", e);
         localStorage.removeItem("flowtoo:user");
       }
     }
@@ -26,30 +27,34 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
+      console.log("Sending login request...");
       const res = await API_AUTH.post("/login", { email, password });
-      console.log("LOGIN RESPONSE FROM BACKEND:", res.data);
+      console.log("Login response received:", res.status, res.data);
 
       const data = res.data;
+      console.log("Storing user data:", data);
       localStorage.setItem("flowtoo:user", JSON.stringify(data));
       setUser(data);
 
-      // Admin redirect
+      console.log("isAdmin value:", data.isAdmin);
+
       if (data.isAdmin === true) {
-        console.log("ADMIN DETECTED → redirecting to /admin");
-        navigate("/admin");
+        console.log("ADMIN LOGIN → navigating to /admin");
+        navigate("/admin", { replace: true });
       } else {
-        console.log("Regular user → redirecting to /");
-        navigate("/");
+        console.log("NORMAL LOGIN → navigating to /");
+        navigate("/", { replace: true });
       }
 
       return data;
     } catch (err) {
-      console.error("Login failed:", err.response?.data || err.message);
+      console.error("Login error:", err.response?.data || err.message);
       throw err.response?.data?.message || "Login failed";
     }
   };
 
   const logout = () => {
+    console.log("Logging out...");
     localStorage.removeItem("flowtoo:user");
     setUser(null);
     navigate("/login");

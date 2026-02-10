@@ -14,11 +14,11 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      console.log("Starting login attempt...");
+      console.log("Login form submitted");
       await login(email, password);
-      // Redirect happens inside login function — no need here
+      console.log("login() function completed successfully");
     } catch (err) {
-      console.error("Login attempt error:", err);
+      console.error("Login form caught error:", err);
       setError(err || "Login failed. Please check your details.");
     } finally {
       setIsLoading(false);
@@ -73,7 +73,6 @@ export default function LoginPage() {
 
       <hr style={{ margin: "1.5rem 0" }} />
 
-      {/* Google login button — unchanged */}
       <a
         href={`${import.meta.env.VITE_API_URL}/api/auth/google`}
         style={{ textDecoration: "none", display: "block" }}
