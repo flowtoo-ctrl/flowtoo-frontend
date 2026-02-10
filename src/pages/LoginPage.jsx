@@ -1,6 +1,7 @@
+
+import "./LoginPage.css"
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "./LoginPage.css"
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -9,90 +10,52 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const submitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
       await login(email, password);
-      window.location.href = "/";
+      // Redirect is now handled inside AuthContext.login()
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed. Please check your credentials or try again later.";
-      setError(message);
+      setError(err || "Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto", padding: "1rem" }}>
+    <div>
       <h2>Login</h2>
 
-      {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={submitHandler}>
-        <div style={{ marginBottom: "1rem" }}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "0.5rem" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "0.5rem" }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            background: isLoading ? "#ccc" : "#007bff",
-            color: "white",
-            border: "none",
-            cursor: isLoading ? "not-allowed" : "pointer",
-          }}
-        >
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      <hr style={{ margin: "1.5rem 0" }} />
+      <hr />
 
-      <a
-        href={`\( {import.meta.env.VITE_API_URL?.replace(/\/ \)/, "") || ""}/api/auth/google`}
-        style={{ textDecoration: "none" }}
-      >
-        <button
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            background: "#4285F4",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Login with Google
-        </button>
+      <a href={`${import.meta.env.VITE_API_URL}/api/auth/google`}>
+        <button>Login with Google</button>
       </a>
     </div>
   );
 }
-

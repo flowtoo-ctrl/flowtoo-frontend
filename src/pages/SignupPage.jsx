@@ -7,14 +7,20 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const submitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
     try {
       await signup(name, email, password);
-      window.location.href = "/";
+      // Redirect is now handled inside AuthContext.signup()
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(err || "Signup failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -24,7 +30,7 @@ export default function SignupPage() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={submitHandler}>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Name"
@@ -32,7 +38,6 @@ export default function SignupPage() {
           onChange={(e) => setName(e.target.value)}
           required
         />
-
         <input
           type="email"
           placeholder="Email"
@@ -40,7 +45,6 @@ export default function SignupPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -48,10 +52,10 @@ export default function SignupPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
-        <button type="submit">Signup</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Signing up..." : "Signup"}
+        </button>
       </form>
     </div>
   );
 }
-
