@@ -13,9 +13,11 @@ export function AuthProvider({ children }) {
     const stored = localStorage.getItem("flowtoo:user");
     if (stored) {
       try {
-        setUser(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        console.log("Loaded user from localStorage on mount:", parsed);
+        setUser(parsed);
       } catch (e) {
-        console.error("Failed to parse stored user", e);
+        console.error("Failed to parse stored user:", e);
         localStorage.removeItem("flowtoo:user");
       }
     }
@@ -25,44 +27,25 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const res = await API_AUTH.post("/login", { email, password });
-      const data = res.data;
+      console.log("LOGIN RESPONSE FROM BACKEND:", res.data);
 
+      const data = res.data;
       localStorage.setItem("flowtoo:user", JSON.stringify(data));
       setUser(data);
 
-      // Redirect based on admin status
+      // Admin redirect
       if (data.isAdmin === true) {
+        console.log("ADMIN DETECTED → redirecting to /admin");
         navigate("/admin");
       } else {
+        console.log("Regular user → redirecting to /");
         navigate("/");
       }
 
       return data;
     } catch (err) {
-      console.error("Login error:", err);
-      throw err.response?.data?.message || "Login failed. Please try again.";
-    }
-  };
-
-  const signup = async (name, email, password) => {
-    try {
-      const res = await API_AUTH.post("/register", { name, email, password });
-      const data = res.data;
-
-      localStorage.setItem("flowtoo:user", JSON.stringify(data));
-      setUser(data);
-
-      // Usually new users are not admin, but we check anyway
-      if (data.isAdmin === true) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
-
-      return data;
-    } catch (err) {
-      console.error("Signup error:", err);
-      throw err.response?.data?.message || "Signup failed. Please try again.";
+      console.error("Login failed:", err.response?.data || err.message);
+      throw err.response?.data?.message || "Login failed";
     }
   };
 
@@ -73,7 +56,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

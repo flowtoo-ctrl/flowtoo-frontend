@@ -4,15 +4,11 @@ import { useAuth } from "../context/AuthContext";
 export default function ProtectedRoute({ children, adminOnly = false }) {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return null; // or <div>Loading...</div> or a spinner component
-  }
+  if (loading) return null;
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
-  // Fixed: user.isAdmin instead of user.user?.isAdmin
+  // Fixed: user.isAdmin (not user.user?.isAdmin)
   if (adminOnly && !user.isAdmin) {
     return <Navigate to="/" replace />;
   }
